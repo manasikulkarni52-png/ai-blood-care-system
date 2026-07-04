@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="card p-5 border-0 shadow-lg" style="border-radius: 25px;">
+            <div class="mb-4">
+                <i class="fa fa-circle-check text-success" style="font-size: 80px;"></i>
+            </div>
+            
+            <h2 class="fw-bold text-dark">Request Submitted!</h2>
+            <p class="text-muted">Your emergency blood request for <strong>{{ hospital }}</strong> has been successfully recorded in our system.</p>
+            
+            <div class="bg-light p-3 rounded-3 mb-4 text-start">
+                <div class="small text-uppercase text-secondary fw-bold mb-1">Status</div>
+                <div class="text-danger fw-bold"><i class="fa fa-clock me-2"></i>Pending Admin Approval</div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <a href="/dashboard" class="btn btn-danger rounded-pill py-2 fw-bold shadow">
+                    <i class="fa fa-house me-2"></i>Back to Dashboard
+                </a>
+                <a href="/request_blood" class="btn btn-outline-secondary rounded-pill py-2">
+                    Submit Another Request
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

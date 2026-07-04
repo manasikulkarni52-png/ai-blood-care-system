@@ -1,0 +1,271 @@
+{% extends "admin_layout.html" %}
+
+{% block content %}
+<style>
+    /* Smooth fade-in for the whole dashboard */
+    .fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hover lift effect for modern 3D feel */
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+    }
+
+    /* Table row highlight */
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.04);
+        transition: background-color 0.2s;
+    }
+
+    /* Subtle glow for status badges */
+    .badge-glow-success { box-shadow: 0 0 10px rgba(25, 135, 84, 0.4); }
+    .badge-glow-warning { box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
+    .badge-glow-danger { box-shadow: 0 0 10px rgba(220, 53, 69, 0.4); }
+</style>
+
+<div class="container-fluid fade-in py-3">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark m-0">Executive Dashboard</h2>
+        <div class="bg-white text-muted px-4 py-2 rounded-pill shadow-sm fw-medium border">
+            <i class="fa fa-user-shield text-danger me-2"></i>Welcome back, Admin
+        </div>
+    </div>
+
+    <!-- METRIC CARDS -->
+    <div class="row mb-4">
+        
+        <!-- 1. TOTAL DONORS CARD (Fixed Link) -->
+        <div class="col-md-4 mb-3 mb-md-0">
+            <a href="{{ url_for('donors') }}" class="text-decoration-none text-dark">
+                <div class="card border-0 shadow-sm h-100 hover-lift rounded-4 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-muted fw-bold mb-0 text-uppercase" style="font-size: 0.75rem;">Total Donors</h6>
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fa fa-users fs-5"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bold text-primary mb-0">{{ donors }}</h2>
+                </div>
+            </a>
+        </div>
+
+        <!-- 2. STOCK UNITS CARD -->
+        <div class="col-md-4 mb-3 mb-md-0">
+            <a href="{{ url_for('admin_stock') }}" class="text-decoration-none text-dark">
+                <div class="card border-0 shadow-sm h-100 hover-lift rounded-4 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-muted fw-bold mb-0 text-uppercase" style="font-size: 0.75rem;">Stock Units</h6>
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fa fa-tint fs-5"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bold text-danger mb-0">{{ stock }}</h2>
+                </div>
+            </a>
+        </div>
+
+        <!-- 3. TOTAL REQUESTS CARD -->
+        <!-- *Note: If your python route is named 'requests', change 'admin_requests' to 'requests' below* -->
+        <div class="col-md-4">
+            <a href="{{ url_for('admin_requests') }}" class="text-decoration-none text-dark">
+                <div class="card border-0 shadow-sm h-100 hover-lift rounded-4 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-muted fw-bold mb-0 text-uppercase" style="font-size: 0.75rem;">Total Requests</h6>
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fa fa-file-medical fs-5"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bold text-success mb-0">{{ requests }}</h2>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- AI PREDICTION WIDGET -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-{{ ai_color }} shadow-sm" style="border-width: 2px; border-radius: 15px;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-muted fw-bold mb-0 text-uppercase" style="font-size: 0.75rem;">
+                            <i class="fa fa-robot me-1 text-{{ ai_color }}"></i> AI Prediction Model
+                        </h6>
+                        <span class="badge bg-{{ ai_color }} bg-opacity-10 text-{{ ai_color }} rounded-pill px-3 py-2" style="font-size: 0.8rem;">
+                            Risk Probability: {{ ai_prob }}%
+                        </span>
+                    </div>
+                    <h4 class="fw-bold text-{{ ai_color }} mb-1">{{ ai_status }}</h4>
+                    <p class="text-muted small mb-0">{{ ai_message }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="row mb-4">
+        <!-- LIVE BLOOD STOCK (BAR CHART) -->
+        <div class="col-lg-8 mb-4 mb-lg-0">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-4">
+                <h5 class="fw-bold mb-4"><i class="fa fa-chart-bar text-secondary me-2"></i>Live Blood Stock</h5>
+                <div style="height: 300px;">
+                    <canvas id="stockChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SYSTEM OVERVIEW (DOUGHNUT CHART) -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-4">
+                <h5 class="fw-bold mb-4"><i class="fa fa-chart-pie text-secondary me-2"></i>System Overview</h5>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="overviewChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT REQUESTS TABLE -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold m-0"><i class="fa fa-list-alt text-secondary me-2"></i>Recent Requests</h5>
+                    <a href="{{ url_for('admin_requests') }}" class="btn btn-dark btn-sm rounded-pill px-3 shadow-sm">Manage All <i class="fa fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle border-top">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-muted small fw-bold pb-3">ID</th>
+                                <th class="text-muted small fw-bold pb-3">HOSPITAL</th>
+                                <th class="text-muted small fw-bold pb-3">BLOOD GROUP</th>
+                                <th class="text-muted small fw-bold pb-3">UNITS</th>
+                                <th class="text-muted small fw-bold pb-3">STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in recent_requests %}
+                            <tr>
+                                <td class="fw-bold text-secondary">#{{ req[0] }}</td>
+                                <td class="fw-medium text-dark">{{ req[1] }}</td>
+                                <td><span class="badge bg-light text-danger border border-danger px-2 py-1">{{ req[2] }}</span></td>
+                                <td class="fw-bold">{{ req[3] }} <span class="text-muted small fw-normal">Units</span></td>
+                                <td>
+                                    {% if req[4] == 'Approved' %}
+                                        <span class="badge bg-success badge-glow-success px-3 py-2 rounded-pill"><i class="fa fa-check-circle me-1"></i>Approved</span>
+                                    {% elif req[4] == 'Rejected' %}
+                                        <span class="badge bg-danger badge-glow-danger px-3 py-2 rounded-pill"><i class="fa fa-times-circle me-1"></i>Rejected</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark badge-glow-warning px-3 py-2 rounded-pill"><i class="fa fa-clock me-1"></i>Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">No recent requests found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const groups = {{ groups | tojson }};
+    const units = {{ units | tojson }};
+
+    // STOCK CHART (Upgraded with animations and rounded bars)
+    new Chart(document.getElementById('stockChart'), {
+        type: 'bar',
+        data: {
+            labels: groups,
+            datasets: [{
+                label: 'Available Units',
+                data: units,
+                backgroundColor: 'rgba(220, 53, 69, 0.85)', // Premium red
+                borderRadius: 8, // Smooth rounded tops
+                borderWidth: 0,
+                barPercentage: 0.6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 2000,
+                easing: 'easeOutQuart'
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 12,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    grid: { borderDash: [5, 5], color: '#e9ecef' },
+                    border: { display: false }
+                },
+                x: { 
+                    grid: { display: false },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+
+    // OVERVIEW CHART (Upgraded to modern thin doughnut)
+    new Chart(document.getElementById('overviewChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Donors', 'Stock Units', 'Requests'],
+            datasets: [{
+                data: [{{ donors }}, {{ stock }}, {{ requests }}],
+                backgroundColor: ['#0d6efd', '#dc3545', '#198754'], // Blue, Red, Green
+                borderWidth: 4,
+                borderColor: '#ffffff',
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%', // Thinner ring
+            animation: {
+                animateScale: true,
+                animateRotate: true,
+                duration: 2000,
+                easing: 'easeOutQuart'
+            },
+            plugins: {
+                legend: { 
+                    position: 'bottom',
+                    labels: { padding: 20, usePointStyle: true }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

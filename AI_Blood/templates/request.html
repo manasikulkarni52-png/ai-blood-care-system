@@ -1,0 +1,299 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    /* Page Entrance Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    /* Premium Glass Form Card */
+    .glass-form-card {
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Top Accent Line */
+    .glass-form-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 5px;
+        background: linear-gradient(90deg, #dc3545, #ff4d4d);
+    }
+
+    /* Section Headers */
+    .section-badge {
+        background: rgba(0,0,0,0.03);
+        border: 1px solid rgba(0,0,0,0.05);
+        color: #495057;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: inline-block;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Premium Input Fields */
+    .input-wrapper {
+        position: relative;
+    }
+    
+    .input-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 1.1rem;
+        z-index: 10;
+        transition: 0.3s ease;
+    }
+
+    .premium-input {
+        border-radius: 14px !important;
+        border: 1px solid rgba(0,0,0,0.08) !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        padding: 14px 16px 14px 50px !important;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #2d3436;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.01);
+    }
+
+    .premium-input::placeholder {
+        color: #ced4da;
+        font-weight: 400;
+    }
+
+    .premium-input:focus {
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.15) !important;
+        border-color: #dc3545 !important;
+        background: #ffffff !important;
+    }
+
+    .premium-input:focus + .input-icon {
+        color: #dc3545;
+    }
+
+    /* File Input Specific Styling */
+    .file-input {
+        padding: 11px 16px 11px 50px !important;
+    }
+    .file-input::file-selector-button {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 4px 12px;
+        margin-right: 15px;
+        color: #495057;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+    .file-input::file-selector-button:hover {
+        background: #e9ecef;
+    }
+
+    /* Emergency Toggle Box */
+    .emergency-box {
+        background: rgba(255, 245, 245, 0.7);
+        border: 2px dashed rgba(220, 53, 69, 0.3);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+    .emergency-active {
+        background: rgba(220, 53, 69, 0.1);
+        border: 2px solid #dc3545;
+        box-shadow: 0 0 20px rgba(220, 53, 69, 0.2);
+        animation: pulse-red 2s infinite;
+    }
+
+    @keyframes pulse-red {
+        0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
+
+    .form-check-input:checked {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+        background: linear-gradient(135deg, #212529 0%, #343a40 100%);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+</style>
+
+<div class="container-fluid px-2 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8">
+            
+            <div class="text-center mb-5 fade-in-up">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 70px; height: 70px; border: 1px solid rgba(220,53,69,0.2);">
+                    <i class="fa fa-hand-holding-droplet fs-2"></i>
+                </div>
+                <h2 class="fw-bolder text-dark tracking-tight">Blood Requisition Form</h2>
+                <p class="text-muted fw-medium">Submit securely to the central AI network. Toggle emergency status for urgent dispatch.</p>
+            </div>
+
+            <div class="glass-form-card p-4 p-md-5 mb-5 fade-in-up" style="animation-delay: 0.1s;">
+                
+                <form action="{{ url_for('submit_request') }}" method="POST" enctype="multipart/form-data">
+                    
+                    <div class="section-badge"><i class="fa fa-user-injured text-danger me-2"></i>Patient Information</div>
+                    
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold text-secondary ms-1">Patient Full Name</label>
+                            <div class="input-wrapper">
+                                <input type="text" name="patient_name" class="form-control premium-input" placeholder="Enter legal name" required>
+                                <i class="fa fa-user input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-secondary ms-1">Patient Age</label>
+                            <div class="input-wrapper">
+                                <input type="number" name="patient_age" class="form-control premium-input" min="1" max="120" placeholder="Years" required>
+                                <i class="fa fa-calendar-alt input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-badge"><i class="fa fa-id-card text-danger me-2"></i>Identity Verification</div>
+                    
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary ms-1">Aadhaar Card Number</label>
+                            <div class="input-wrapper">
+                                <input type="text" name="aadhaar_no" class="form-control premium-input" 
+                                       maxlength="12" 
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                       pattern="[0-9]{12}" title="Please enter exactly 12 digits" placeholder="Enter 12-digit ID" required>
+                                <i class="fa fa-fingerprint input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary ms-1">Upload ID Proof <span class="fw-normal opacity-75">(PDF/JPG)</span></label>
+                            <div class="input-wrapper">
+                                <input type="file" name="id_proof" class="form-control premium-input file-input" accept=".pdf, image/jpeg, image/png" required>
+                                <i class="fa fa-file-upload input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-badge"><i class="fa fa-hospital text-danger me-2"></i>Medical Facility & Requirements</div>
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-secondary ms-1">Target Hospital / Clinic</label>
+                            <div class="input-wrapper">
+                                <input type="text" name="hospital" class="form-control premium-input" placeholder="e.g., Civil Hospital or Bharati Vidyapeeth" required>
+                                <i class="fa fa-building input-icon"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary ms-1">Required Blood Group</label>
+                            <div class="input-wrapper">
+                                <select name="blood_group" class="form-select premium-input" required>
+                                    <option value="" disabled selected>Select specific group...</option>
+                                    <option value="A+">A Positive (A+)</option>
+                                    <option value="A-">A Negative (A-)</option>
+                                    <option value="B+">B Positive (B+)</option>
+                                    <option value="B-">B Negative (B-)</option>
+                                    <option value="O+">O Positive (O+)</option>
+                                    <option value="O-">O Negative (O-)</option>
+                                    <option value="AB+">AB Positive (AB+)</option>
+                                    <option value="AB-">AB Negative (AB-)</option>
+                                </select>
+                                <i class="fa fa-tint input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary ms-1">Units Required</label>
+                            <div class="input-wrapper">
+                                <input type="number" name="units" class="form-control premium-input" min="1" max="100" placeholder="Number of units" required>
+                                <i class="fa fa-cubes input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="emergency-box p-4 mb-5" id="emergencyContainer">
+                        <div class="form-check form-switch d-flex align-items-center m-0">
+                            <input class="form-check-input fs-3 me-3 mt-0 cursor-pointer" type="checkbox" role="switch" id="emergencyToggle" name="is_emergency" value="yes" style="cursor: pointer;">
+                            <label class="form-check-label text-danger fw-bolder mb-0" for="emergencyToggle" style="cursor: pointer; letter-spacing: 0.5px;">
+                                <i class="fa fa-exclamation-triangle me-2"></i> MARK AS HIGH-PRIORITY EMERGENCY
+                                <span class="d-block text-muted fw-medium mt-1" style="font-size: 0.8rem; letter-spacing: 0;">Activating this will bypass standard queue protocols and alert nearby donors immediately.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section-badge"><i class="fa fa-phone-alt text-danger me-2"></i>Contact Information</div>
+                    
+                    <div class="mb-5">
+                        <label class="form-label small fw-bold text-secondary ms-1">Attending Contact Number</label>
+                        <div class="input-wrapper">
+                            <input type="tel" name="contact" class="form-control premium-input" 
+                                   maxlength="10" 
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                   pattern="[0-9]{10}" 
+                                   title="Please enter a valid 10-digit mobile number." 
+                                   placeholder="Enter 10-digit mobile number" required>
+                            <i class="fa fa-phone input-icon"></i>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted opacity-25 mb-4">
+
+                    <button type="submit" class="btn btn-submit w-100 py-3 rounded-pill fw-bold fs-5 shadow-sm" id="submitBtn">
+                        SUBMIT REQUISITION TO NETWORK <i class="fa fa-arrow-right ms-2"></i>
+                    </button>
+                    
+                    <div class="text-center mt-3">
+                        <small class="text-muted fw-semibold"><i class="fa fa-shield-halved text-success me-1"></i> Patient identity and medical data are End-to-End Encrypted.</small>
+                    </div>
+
+                </form>
+            </div> 
+        </div>
+    </div>
+</div>
+
+<script>
+    // JS to make the Emergency Box glow when toggled!
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('emergencyToggle');
+        const container = document.getElementById('emergencyContainer');
+        
+        toggle.addEventListener('change', function() {
+            if(this.checked) {
+                container.classList.add('emergency-active');
+            } else {
+                container.classList.remove('emergency-active');
+            }
+        });
+    });
+</script>
+{% endblock %}

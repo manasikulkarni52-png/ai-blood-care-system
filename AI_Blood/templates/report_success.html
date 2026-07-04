@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card p-5 text-center shadow-lg" style="border-radius: 25px; max-width: 500px; border-top: 5px solid #dc3545;">
+        <div class="mb-4">
+            <i class="fa-solid fa-file-circle-check text-success" style="font-size: 4rem;"></i>
+        </div>
+        
+        <h2 class="fw-bold">Report Generated!</h2>
+        <p class="text-muted">The system has compiled the real-time inventory and donor registry into a secure document.</p>
+        
+        <div class="bg-light p-3 rounded-4 mb-4 text-start">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">Total Stock:</span>
+                <span class="fw-bold">{{ stats.total_units }} Units</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">Registered Donors:</span>
+                <span class="fw-bold">{{ stats.total_donors }}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span class="text-secondary">File Format:</span>
+                <span class="badge bg-danger">PDF / CSV</span>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <a href="{{ url_for('download_csv') }}" class="btn btn-danger py-2 rounded-pill fw-bold">
+                <i class="fa fa-download me-2"></i> Download CSV Now
+            </a>
+            <a href="/dashboard" class="btn btn-outline-secondary py-2 rounded-pill">
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

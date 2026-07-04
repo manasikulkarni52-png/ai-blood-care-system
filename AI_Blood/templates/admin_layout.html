@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel | BloodCare AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --admin-bg: #f0f2f5;
+            --sidebar-color: #1a2a3a;
+            --accent-red: #ff4d4d;
+        }
+        body { background: var(--admin-bg); font-family: 'Inter', sans-serif; }
+        
+        /* Glassmorphism Sidebar */
+        .sidebar {
+            height: 100vh; width: 260px;
+            background: linear-gradient(180deg, #1a2a3a 0%, #0f172a 100%);
+            color: white; position: fixed; top: 0; left: 0;
+            padding: 25px 15px; z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar-brand {
+            font-size: 1.5rem; font-weight: 800; color: white;
+            text-align: center; margin-bottom: 40px; display: block;
+            text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+        }
+        .sidebar a {
+            display: flex; align-items: center; color: #94a3b8;
+            padding: 12px 20px; text-decoration: none;
+            border-radius: 12px; margin-bottom: 8px; transition: 0.3s;
+        }
+        .sidebar a i { margin-right: 15px; font-size: 1.1rem; }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(255, 77, 77, 0.1);
+            color: var(--accent-red); font-weight: 600;
+        }
+        .main-content { margin-left: 260px; padding: 40px; }
+        
+        /* Modern Card Style */
+        .glass-card {
+            background: white; border: none; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s;
+        }
+        .glass-card:hover { transform: translateY(-5px); }
+        .kpi-icon {
+            width: 50px; height: 50px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <a href="#" class="sidebar-brand">
+        <i class="fa-solid fa-droplet text-danger me-2"></i>Admin Panel
+    </a>
+
+    <nav>
+        <a href="{{ url_for('admin') }}" class="{{ 'active' if request.path == '/admin' }}">
+            <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+        <a href="{{ url_for('donors') }}">
+            <i class="fa-solid fa-users"></i> Donors
+        </a>
+        <a href="{{ url_for('admin_stock') }}">
+            <i class="fa-solid fa-box-archive"></i> Blood Stock
+        </a>
+        <a href="{{ url_for('admin_requests') }}">
+            <i class="fa-solid fa-hand-holding-medical"></i> Requests
+        </a>
+        <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+            <a href="{{ url_for('logout') }}" class="text-danger">
+                <i class="fa-solid fa-power-off"></i> Logout
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="main-content">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

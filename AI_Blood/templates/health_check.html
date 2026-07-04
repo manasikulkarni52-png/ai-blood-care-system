@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    /* Page Entrance Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    /* Premium Glass Card */
+    .glass-diagnostic-card {
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* AI Scanner Effect Line */
+    .glass-diagnostic-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 4px;
+        background: linear-gradient(90deg, #ff4d4d, #b30000);
+    }
+
+    /* Premium Input Styling */
+    .input-wrapper {
+        position: relative;
+        margin-top: 8px;
+    }
+    
+    .input-icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--blood-red, #dc3545);
+        font-size: 1.1rem;
+        z-index: 10;
+        transition: 0.3s ease;
+    }
+
+    .premium-input {
+        border-radius: 16px !important;
+        border: 1px solid rgba(0,0,0,0.06) !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        padding: 16px 16px 16px 55px !important;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #2d3436;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .premium-input::placeholder {
+        font-weight: 400;
+        color: #adb5bd;
+    }
+
+    .premium-input:focus {
+        box-shadow: 0 0 0 5px rgba(220, 53, 69, 0.15) !important;
+        border-color: #dc3545 !important;
+        background: #ffffff !important;
+    }
+
+    .premium-input:focus + .input-icon {
+        color: #8b0000;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    /* Gradient Submit Button */
+    .btn-analyze {
+        background: linear-gradient(135deg, #ff4d4d 0%, #b30000 100%);
+        border: none;
+        border-radius: 16px;
+        color: white;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .btn-analyze:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 25px rgba(179, 0, 0, 0.3);
+        color: white;
+    }
+
+    /* AI Pulse Badge */
+    .ai-pulse-badge {
+        background: rgba(25, 135, 84, 0.1);
+        border: 1px solid rgba(25, 135, 84, 0.2);
+        color: #198754;
+        border-radius: 30px;
+        padding: 6px 15px;
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+    .pulse-dot {
+        width: 8px; height: 8px;
+        background-color: #198754;
+        border-radius: 50%;
+        margin-right: 8px;
+        animation: pulse-green 2s infinite;
+    }
+</style>
+
+<div class="container-fluid px-3 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            
+            <div class="mb-5 fade-in-up">
+                <div class="d-flex align-items-center mb-1">
+                    <div style="width: 14px; height: 32px; background: #dc3545; border-radius: 6px; margin-right: 15px; box-shadow: 0 0 10px rgba(220, 53, 69, 0.3);"></div>
+                    <h2 class="fw-bold text-dark mb-0 tracking-tight">CBC Health Analysis</h2>
+                </div>
+                <p class="text-muted fw-medium ms-4 ps-2">Enter complete blood count parameters for Machine Learning assessment.</p>
+            </div>
+
+            <div class="glass-diagnostic-card p-4 p-md-5 fade-in-up" style="animation-delay: 0.1s;">
+                
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h4 class="fw-bold m-0 text-dark">
+                        <i class="fa fa-microscope text-danger me-2"></i> Diagnostic Input
+                    </h4>
+                    <div class="ai-pulse-badge shadow-sm">
+                        <span class="pulse-dot"></span> ML Model Ready
+                    </div>
+                </div>
+
+                <form action="/predict" method="POST">
+                    <div class="row g-4">
+                        
+                        <div class="col-md-6 fade-in-up" style="animation-delay: 0.2s;">
+                            <label class="form-label fw-bold text-secondary ms-1 mb-0">Hemoglobin (g/dL)</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="0.1" name="hb" class="form-control premium-input shadow-sm" placeholder="e.g. 14.2" required>
+                                <i class="fa fa-tint input-icon"></i>
+                            </div>
+                            <div class="small text-muted mt-2 ms-2 fw-medium"><i class="fa fa-info-circle me-1 opacity-50"></i>Normal Range: 13.5 - 17.5</div>
+                        </div>
+
+                        <div class="col-md-6 fade-in-up" style="animation-delay: 0.3s;">
+                            <label class="form-label fw-bold text-secondary ms-1 mb-0">RBC Count (million/µL)</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="0.01" name="rbc" class="form-control premium-input shadow-sm" placeholder="e.g. 4.80" required>
+                                <i class="fa fa-disease input-icon"></i>
+                            </div>
+                            <div class="small text-muted mt-2 ms-2 fw-medium"><i class="fa fa-info-circle me-1 opacity-50"></i>Normal Range: 4.5 - 5.5</div>
+                        </div>
+
+                        <div class="col-md-6 fade-in-up" style="animation-delay: 0.4s;">
+                            <label class="form-label fw-bold text-secondary ms-1 mb-0">WBC Count (cells/mcL)</label>
+                            <div class="input-wrapper">
+                                <input type="number" name="wbc" class="form-control premium-input shadow-sm" placeholder="e.g. 6500" required>
+                                <i class="fa fa-shield-virus input-icon"></i>
+                            </div>
+                            <div class="small text-muted mt-2 ms-2 fw-medium"><i class="fa fa-info-circle me-1 opacity-50"></i>Normal Range: 4,500 - 11,000</div>
+                        </div>
+
+                        <div class="col-md-6 fade-in-up" style="animation-delay: 0.5s;">
+                            <label class="form-label fw-bold text-secondary ms-1 mb-0">Platelet Count</label>
+                            <div class="input-wrapper">
+                                <input type="number" name="platelets" class="form-control premium-input shadow-sm" placeholder="e.g. 250000" required>
+                                <i class="fa fa-layer-group input-icon"></i>
+                            </div>
+                            <div class="small text-muted mt-2 ms-2 fw-medium"><i class="fa fa-info-circle me-1 opacity-50"></i>Normal Range: 150,000 - 450,000</div>
+                        </div>
+
+                        <div class="col-12 mt-5 fade-in-up" style="animation-delay: 0.6s;">
+                            <button type="submit" class="btn btn-analyze w-100 py-3 fw-bold fs-5 shadow">
+                                <i class="fa fa-brain me-2"></i> Run AI Risk Assessment
+                            </button>
+                            <p class="text-center text-muted small mt-3 fw-semibold">
+                                <i class="fa fa-lock me-1"></i> Data is securely processed by the BloodCare ML pipeline.
+                            </p>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

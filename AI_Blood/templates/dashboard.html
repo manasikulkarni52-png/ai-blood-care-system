@@ -1,0 +1,295 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    /* Inherit global colors and set local dashboard variables */
+    :root {
+        --glass-panel: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.6);
+        --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Page Entrance Animation */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    /* Dashboard Background Wrapper */
+    .dashboard-container {
+        padding: 10px 5px 30px 5px;
+    }
+
+    .dashboard-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+
+    /* 🌟 SYNCED PREMIUM GLASS CARDS */
+    .glass-card {
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        background: var(--glass-panel);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: 100%;
+        position: relative;
+    }
+
+    /* Hover Glow & Float Effects */
+    .dashboard-card-link:hover .glass-card {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(220, 53, 69, 0.08);
+        border-color: rgba(220, 53, 69, 0.2);
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Floating Icon Circles */
+    .icon-circle {
+        width: 65px;
+        height: 65px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        font-size: 1.6rem;
+        transition: all 0.4s ease;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+    }
+    .dashboard-card-link:hover .icon-circle {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    /* Card Icon Colors synced with Layout */
+    .icon-bg-donors { background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%); color: #4361ee; }
+    .icon-bg-stock { background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%); color: var(--blood-red); }
+    .icon-bg-alerts { background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%); color: #f59e0b; }
+    
+    .bg-success-soft { background-color: rgba(25, 135, 84, 0.1); color: #198754; }
+    .bg-danger-soft { background-color: rgba(220, 53, 69, 0.1); color: var(--blood-red); }
+
+    /* Alert Pulse Animation */
+    @keyframes alert-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
+    .alert-active .icon-circle {
+        animation: alert-pulse 2s infinite;
+        background: var(--blood-red);
+        color: white;
+    }
+
+    /* 🌟 ENHANCED INVENTORY TABLE */
+    .table-container {
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    
+    .table thead th {
+        background-color: rgba(255, 255, 255, 0.5) !important;
+        border-bottom: 2px solid rgba(0,0,0,0.03);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #64748b;
+        padding: 22px 15px;
+    }
+    
+    .table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    .table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.6) !important;
+    }
+    
+    .table td { 
+        padding: 22px 15px; 
+        border-bottom: 1px solid rgba(0,0,0,0.03); 
+        vertical-align: middle;
+        background: transparent !important;
+    }
+
+    /* Glowing Progress Bars */
+    .progress {
+        background-color: rgba(0,0,0,0.04);
+        border-radius: 12px;
+        overflow: visible;
+        height: 8px !important;
+    }
+    .progress-bar {
+        border-radius: 12px;
+        position: relative;
+    }
+    .progress-bar.bg-success { box-shadow: 0 0 12px rgba(25, 135, 84, 0.5); }
+    .progress-bar.bg-warning { box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); }
+    .progress-bar.bg-danger { box-shadow: 0 0 12px rgba(220, 53, 69, 0.5); }
+    
+    /* Blood Group Drop Badge */
+    .blood-badge {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--blood-light) 0%, var(--blood-dark) 100%);
+        color: white;
+        font-weight: 800;
+        font-size: 1.1rem;
+        border-radius: 14px;
+        box-shadow: 0 6px 12px rgba(220, 53, 69, 0.25);
+    }
+
+    /* Live Update Dot */
+    .live-dot {
+        width: 6px; height: 6px;
+        background-color: var(--blood-red);
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+        animation: pulse-green 2s infinite;
+    }
+</style>
+
+<div class="dashboard-container">
+    
+    <div class="mb-5 fade-in-up">
+        <div class="d-flex align-items-center mb-1">
+            <div style="width: 14px; height: 32px; background: var(--blood-red); border-radius: 6px; margin-right: 15px; box-shadow: 0 0 10px rgba(220, 53, 69, 0.3);"></div>
+            <h2 class="fw-bold text-dark mb-0 tracking-tight">Main Dashboard</h2>
+        </div>
+        <p class="text-muted fw-medium ms-4 ps-2">Real-time AI inventory & facility monitoring.</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        
+        <div class="col-md-6 col-xl-4 fade-in-up" style="animation-delay: 0.1s;">
+            <a href="{{ url_for('donor_portal') }}" class="dashboard-card-link">
+                <div class="card p-4 glass-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-3 tracking-wide">Total Donations</h6>
+                            <h1 class="fw-bolder mb-1 text-dark" style="font-size: 2.8rem;">{{ user_donation_count }}</h1>
+                            <span class="badge bg-success-soft text-success mt-2 px-2 py-1 rounded-pill" style="font-size: 0.75rem;"><i class="fa fa-arrow-trend-up me-1"></i> +4% vs last week</span>
+                        </div>
+                        <div class="icon-circle icon-bg-donors"><i class="fa-solid fa-users-viewfinder"></i></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-4 fade-in-up" style="animation-delay: 0.2s;">
+            <a href="{{ url_for('blood_stock') }}" class="dashboard-card-link">
+                <div class="card p-4 glass-card border-top border-4 border-danger">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-3 tracking-wide">Network Stock</h6>
+                            <h1 class="fw-bolder text-dark mb-1" style="font-size: 2.8rem;">{{ inventory|sum(attribute='units') }} <span class="fs-6 text-muted fw-semibold position-relative" style="top: -15px;">Units</span></h1>
+                            <span class="badge bg-danger-soft text-danger mt-2 px-2 py-1 rounded-pill d-flex align-items-center" style="font-size: 0.75rem; width: fit-content;"><span class="live-dot"></span> Live Syncing</span>
+                        </div>
+                        <div class="icon-circle icon-bg-stock"><i class="fa-solid fa-droplet"></i></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-12 col-xl-4 fade-in-up" style="animation-delay: 0.3s;">
+            <a href="{{ url_for('alerts') }}" class="dashboard-card-link">
+                <div class="card p-4 glass-card {% if alerts_count > 0 %}border-warning alert-active{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-3 tracking-wide">System Alerts</h6>
+                            <h1 class="fw-bolder mb-1 {% if alerts_count > 0 %}text-danger{% else %}text-dark{% endif %}" style="font-size: 2.8rem;">{{ alerts_count }}</h1>
+                            <small class="text-muted fw-bold mt-1 d-block"><i class="fa fa-shield-halved me-1 opacity-50"></i> {% if alerts_count > 0 %}Requires immediate attention{% else %}All systems optimal{% endif %}</small>
+                        </div>
+                        <div class="icon-circle icon-bg-alerts"><i class="fa-solid fa-bell"></i></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div> 
+
+    <div class="glass-card table-container fade-in-up" style="animation-delay: 0.4s;">
+        <div class="card-header bg-transparent py-4 d-flex justify-content-between align-items-center border-bottom px-4">
+            <h5 class="fw-bold m-0 text-dark d-flex align-items-center"><i class="fa fa-server text-danger me-2"></i> Real-Time Inventory</h5>
+            <a href="{{ url_for('report_status') }}" class="btn btn-sm btn-outline-danger rounded-pill px-4 fw-bold shadow-sm transition">
+                <i class="fa fa-file-pdf me-1"></i> Export Report
+            </a>
+         </div>
+        
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-5">Blood Group</th>
+                        <th style="width: 35%;">Capacity Utilization</th>
+                        <th>Volume</th>
+                        <th class="text-center pe-4">AI Prediction Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>    
+                {% for item in inventory %}
+                <tr>
+                    <td class="ps-5">
+                        <div class="d-flex align-items-center">
+                            <div class="blood-badge me-3">
+                                {{ item.group }}
+                            </div>
+                            <div>
+                                <span class="d-block fw-bold text-dark fs-6">Type {{ item.group }}</span>
+                                <span class="text-muted small fw-semibold">
+                                    {% if '+' in item.group %}
+                                        <i class="fa fa-plus text-success" style="font-size: 0.6rem;"></i> Rh Positive
+                                    {% elif '-' in item.group %}
+                                        <i class="fa fa-minus text-danger" style="font-size: 0.6rem;"></i> Rh Negative
+                                    {% else %}
+                                        Standard
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center pe-4">
+                            <div class="progress flex-grow-1 shadow-sm">
+                                <div class="progress-bar bg-{{ item.color }} progress-bar-striped progress-bar-animated" style="width: {{ item.width }}%"></div>
+                            </div>
+                            <span class="ms-3 small fw-bolder text-dark">{{ item.width }}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="h5 fw-bolder text-dark mb-0">{{ item.units }}</span>
+                        <span class="text-muted small fw-bold ms-1 uppercase tracking-wide" style="font-size: 0.7rem;">Units</span>
+                    </td>
+                    <td class="text-center pe-4">
+                        <span class="badge rounded-pill bg-{{ item.color }} bg-opacity-10 text-{{ item.color }} border border-{{ item.color }} border-opacity-25 px-4 py-2 shadow-sm" style="font-size: 0.75rem; min-width: 110px;">
+                            <i class="fa fa-circle-dot me-1" style="font-size: 0.5rem;"></i> {{ item.status|upper }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-center py-5">
+                        <div class="mb-3"><i class="fa fa-database fa-3x text-muted opacity-25"></i></div>
+                        <h6 class="text-dark fw-bold mb-1">No Inventory Data</h6>
+                        <p class="text-muted small">The centralized database currently has no records.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

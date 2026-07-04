@@ -1,0 +1,212 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    /* =========================================
+       CRYSTAL SERENITY THEME (Synced)
+       ========================================= */
+    
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.5);
+        --accent-red: #dc3545; /* Synced with global theme */
+        --accent-dark: #b30000;
+        --soft-text: #4a5568;
+    }
+
+    .serenity-canvas {
+        border-radius: 30px;
+        padding: 10px 5px 30px 5px;
+        min-height: 85vh;
+        animation: fadeIn 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    /* Soft Floating Glass Cards */
+    .crystal-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .crystal-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(220, 53, 69, 0.08);
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(220, 53, 69, 0.2);
+    }
+
+    /* Elegant Typography */
+    .text-pearl { color: #2d3748; letter-spacing: -0.5px; }
+    .text-subtle { color: #718096; font-weight: 600; }
+
+    /* Animated Blood Drop Icon */
+    .drop-container {
+        position: relative;
+        display: inline-block;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .blood-icon-crystal {
+        font-size: 38px;
+        background: linear-gradient(135deg, #ff4d4d 0%, #b30000 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 4px 8px rgba(220, 53, 69, 0.3));
+    }
+
+    /* Liquid Progress Bars */
+    .liquid-track {
+        background: rgba(0,0,0,0.04);
+        height: 8px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .liquid-fill {
+        border-radius: 10px;
+        background: linear-gradient(90deg, #ff4d4d, #b30000);
+        box-shadow: 0 0 12px rgba(220, 53, 69, 0.4);
+    }
+
+    /* AI Intelligence Crystal Panel */
+    .ai-crystal-panel {
+        background: linear-gradient(120deg, rgba(255,255,255,0.9) 0%, rgba(240,244,255,0.9) 100%);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 28px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+
+    /* AI Sparkle Animation */
+    .ai-icon-crystal {
+        color: var(--accent-red);
+        font-size: 32px;
+        animation: rotateGlow 4s linear infinite;
+    }
+
+    @keyframes rotateGlow {
+        0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+        50% { transform: rotate(180deg) scale(1.1); filter: hue-rotate(20deg); }
+        100% { transform: rotate(360deg) scale(1); filter: hue-rotate(0deg); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+    }
+
+    /* Status Badges */
+    .status-chip {
+        font-size: 0.75rem;
+        padding: 6px 18px;
+        border-radius: 100px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid transparent;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    }
+    .chip-critical { background: rgba(220, 53, 69, 0.1); color: #dc3545; border-color: rgba(220, 53, 69, 0.2); }
+    .chip-stable { background: rgba(25, 135, 84, 0.1); color: #198754; border-color: rgba(25, 135, 84, 0.2); }
+    .chip-low { background: rgba(253, 126, 20, 0.1); color: #fd7e14; border-color: rgba(253, 126, 20, 0.2); }
+</style>
+
+<div class="container-fluid px-2 py-4 serenity-canvas">
+    
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div class="d-flex align-items-center mb-1">
+            <div style="width: 14px; height: 32px; background: #dc3545; border-radius: 6px; margin-right: 15px; box-shadow: 0 0 10px rgba(220, 53, 69, 0.3);"></div>
+            <div>
+                <h2 class="fw-bold text-pearl m-0 tracking-tight">Inventory Intelligence</h2>
+                <p class="text-subtle small m-0 mt-1">Live analytics and stock distribution dashboard.</p>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3 bg-white px-3 py-2 rounded-pill shadow-sm border">
+            <div style="width: 8px; height: 8px; background: #198754; border-radius: 50%; box-shadow: 0 0 8px #198754; animation: pulse-green 2s infinite;"></div>
+            <span class="small fw-bolder text-success d-none d-md-block" style="letter-spacing: 0.5px;">System Synchronized</span>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        {% for item in stock %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card crystal-card p-4 h-100 border-0">
+                
+                <div class="text-center mb-3">
+                    <div class="drop-container">
+                        <i class="fa-solid fa-droplet blood-icon-crystal"></i>
+                    </div>
+                    <h1 class="fw-bolder text-pearl mt-2 mb-0" style="font-size: 2.5rem;">{{ item.group }}</h1>
+                    <p class="text-muted small mb-3 fw-bold text-uppercase tracking-wide">{{ item.units }} Units Total</p>
+                </div>
+
+                <div class="d-flex justify-content-center mb-4">
+                    <span class="status-chip 
+                        {% if item.status == 'Critical' %} chip-critical
+                        {% elif item.status == 'Low Stock' %} chip-low
+                        {% else %} chip-stable {% endif %}">
+                        {{ item.status }}
+                    </span>
+                </div>
+
+                <div class="liquid-track">
+                    <div class="liquid-fill h-100" 
+                         style="width: {{ (item.units / 1000) * 100 }}%; 
+                                background: {% if item.status == 'Critical' %}#dc3545{% elif item.status == 'Low Stock' %}#fd7e14{% else %}#198754{% endif %};
+                                box-shadow: 0 0 10px {% if item.status == 'Critical' %}#dc3545{% elif item.status == 'Low Stock' %}#fd7e14{% else %}#198754{% endif %};">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card ai-crystal-panel p-4 p-md-5 mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-1 text-center">
+                <i class="fa-solid fa-wand-magic-sparkles ai-icon-crystal"></i>
+            </div>
+            <div class="col-md-11 mt-3 mt-md-0">
+                <h4 class="fw-bolder text-dark mb-2">AI Stock Intelligence</h4>
+                <div class="p-3 rounded-4 mb-3" style="background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.03);">
+                    <p class="m-0 text-dark fw-medium lh-lg" style="font-size: 1.05rem;">
+                        {% if low_groups %}
+                            <i class="fa-solid fa-bell text-danger me-2 fa-shake"></i>
+                            <span class="text-danger fw-bolder">Anomaly Detected.</span> 
+                            Supply chain pressure identified for <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 fs-6 px-2 mx-1">{{ low_groups | join(', ') }}</span>. 
+                            The AI engine suggests initiating immediate recruitment protocols for these specific phenotypes.
+                        {% else %}
+                            <i class="fa-solid fa-shield-check text-success me-2"></i>
+                            <span class="text-success fw-bolder">Healthy Reserves.</span> 
+                            No shortages predicted for the next 14-day cycle based on localized hospital demand trends.
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2 px-1">
+                    <span class="text-muted small fw-bolder text-uppercase" style="letter-spacing: 0.5px;"><i class="fa fa-microchip me-1"></i> Neural Confidence Level</span>
+                    <span class="text-dark small fw-bolder">94.2%</span>
+                </div>
+                <div class="liquid-track" style="height: 6px;">
+                    <div class="liquid-fill h-100 bg-success" style="width: 94%; background: linear-gradient(90deg, #20c997, #198754); box-shadow: 0 0 10px rgba(25, 135, 84, 0.4);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

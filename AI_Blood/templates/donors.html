@@ -1,0 +1,256 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    /* CRYSTAL SERENITY V2: FANTASY GLOW EDITION */
+    :root {
+        --glow-red: rgba(255, 77, 77, 0.5);
+        --glow-green: rgba(72, 187, 120, 0.4);
+        --crystal-blur: blur(15px);
+    }
+
+    .serenity-canvas {
+        background: radial-gradient(circle at top right, #f8f9ff, #eef2f7);
+        border-radius: 30px;
+        padding: 2.5rem;
+        min-height: 85vh;
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    /* Glassmorphism Card with Inner Glow */
+    .crystal-card {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: var(--crystal-blur);
+        -webkit-backdrop-filter: var(--crystal-blur);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 28px;
+        box-shadow: 0 15px 35px rgba(157, 168, 189, 0.2), 
+                    inset 0 0 15px rgba(255, 255, 255, 0.5);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    }
+
+    .crystal-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 45px rgba(157, 168, 189, 0.3);
+    }
+
+    .text-pearl { 
+        color: #1a202c; 
+        letter-spacing: -0.8px; 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    /* THE GLOWING RECOVERY GAUGE */
+    .gauge-inner {
+        width: 170px; 
+        height: 170px; 
+        border: 6px solid #ff4d4d; 
+        background: #ffffff;
+        position: relative;
+        /* Outer Glow */
+        box-shadow: 0 0 25px var(--glow-red);
+        animation: pulseRecovery 2.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulseRecovery {
+        0% { box-shadow: 0 0 10px var(--glow-red); transform: scale(1); }
+        100% { box-shadow: 0 0 35px rgba(255, 77, 77, 0.8); transform: scale(1.02); }
+    }
+
+    /* ELIGIBILITY GLOW */
+    .eligibility-glow {
+        background: rgba(72, 187, 120, 0.05);
+        border: 1px solid rgba(72, 187, 120, 0.2);
+        box-shadow: 0 0 20px var(--glow-green);
+    }
+
+    /* PREMIUM INPUTS */
+    .form-control, .form-select {
+        background: rgba(243, 246, 255, 0.6) !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        background: #ffffff !important;
+        box-shadow: 0 0 0 4px rgba(255, 77, 77, 0.15) !important;
+        border-color: #ff4d4d !important;
+    }
+
+    .status-chip {
+        font-size: 0.75rem;
+        padding: 10px 22px;
+        border-radius: 50px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); filter: blur(5px); }
+        to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+</style>
+
+<div class="serenity-canvas p-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold text-pearl m-0" style="letter-spacing: -1px;">Donor Center</h2>
+            <p class="text-muted m-0"><i class="fa fa-sparkles me-1 text-primary"></i> Personal health portal for <strong>{{ session['user'] }}</strong></p>
+        </div>
+        <div>
+            {% if not donor %}
+                <span class="status-chip bg-white text-warning border border-warning shadow-sm">Status: Not Registered</span>
+            {% elif not can_donate %}
+                <span class="status-chip bg-white text-danger border border-danger shadow-sm px-4">Status: Recovery Phase</span>
+            {% else %}
+                <span class="status-chip bg-white text-success border border-success shadow-sm px-4">Status: Active Donor</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% if not donor %}
+            <div class="col-lg-6 mx-auto">
+                <div class="card crystal-card p-5">
+                    <div class="text-center mb-4">
+                        <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fa fa-user-plus fs-4"></i>
+                        </div>
+                        <h4 class="fw-bold text-pearl">Donor Registration</h4>
+                    </div>
+                    <form action="{{ url_for('register_donor_action') }}" method="POST">
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-2 ms-2">Blood Group</label>
+                            <select name="blood_group" class="form-select rounded-pill-sm" required>
+                                <option value="" disabled selected>Select Type</option>
+                                <option value="A+">A+</option><option value="A-">A-</option>
+                                <option value="B+">B+</option><option value="B-">B-</option>
+                                <option value="O+">O+</option><option value="O-">O-</option>
+                                <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-2 ms-2">Age</label>
+                                <input type="number" name="age" class="form-control rounded-pill-sm" min="18" max="65" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-2 ms-2">Weight (kg)</label>
+                                <input type="number" name="weight" class="form-control rounded-pill-sm" min="45" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="small fw-bold text-muted mb-2 ms-2">Phone Number</label>
+                            <input type="tel" name="phone" class="form-control rounded-pill-sm" pattern="[0-9]{10}" placeholder="10-digit mobile" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-lg mt-2" style="background: linear-gradient(45deg, #ff4d4d, #f53d3d);">
+                            Create Donor Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        {% else %}
+            <div class="col-lg-5">
+                <div class="card crystal-card p-4 h-100 text-center">
+                    <h5 class="fw-bold text-pearl mb-4">Medical Eligibility</h5>
+                    
+                    {% if not can_donate %}
+                        <div class="d-flex justify-content-center mb-4 mt-2">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center gauge-inner">
+                                <div class="text-center">
+                                    <h1 class="fw-bold text-danger mb-0" style="font-size: 3.5rem; line-height: 1;">{{ days_left }}</h1>
+                                    <p class="text-muted fw-bold small m-0">DAYS LEFT</p>
+                                </div>
+                            </div>
+                        </div>
+                        <h6 class="fw-bold text-danger mb-2">Rest Phase Required</h6>
+                        <p class="small text-muted px-3 mb-4">Your body is regenerating blood cells. You will be eligible again in <strong>{{ days_left }} days</strong>.</p>
+                        <div class="p-3 rounded-4 bg-light border border-dashed text-muted small">
+                            Next suggested date: <strong>{{ next_date if next_date else 'Calculating...' }}</strong>
+                        </div>
+                    {% else %}
+                        <div class="p-4 rounded-4 mb-4" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05)); border: 1px solid rgba(40, 167, 69, 0.2);">
+                            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                <i class="fa fa-heartbeat fs-5"></i>
+                            </div>
+                            <h6 class="fw-bold text-success mb-0">System Cleared</h6>
+                            <p class="small text-muted m-0">You are ready to save a life today.</p>
+                        </div>
+                        
+                        <form action="{{ url_for('submit_donation') }}" method="POST">
+                            <div class="mb-3 text-start">
+                                <label class="small fw-bold text-muted ms-2 mb-2">Donation Facility</label>
+                                <input list="hospitals" name="hospital" class="form-control rounded-pill-sm border-0" placeholder="Where did you donate?" required>
+                                <datalist id="hospitals">
+                                    <option value="Civil Hospital, Sangli">
+                                    <option value="Smt. Mathubai Garware Medical Center">
+                                    <option value="Bharati Hospital">
+                                    <option value="LifeCare Blood Bank">
+                                </datalist>
+                            </div>
+                            <div class="mb-4 text-start">
+                                <label class="small fw-bold text-muted ms-2 mb-2">Units (350ml - 450ml per unit)</label>
+                                <input type="number" name="units" class="form-control rounded-pill-sm border-0" min="1" max="2" value="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-lg" style="background: linear-gradient(45deg, #ff4d4d, #f53d3d);">
+                                LOG DONATION
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <div class="col-lg-7">
+                <div class="card crystal-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold text-pearl m-0"><i class="fa fa-history me-2 text-danger"></i>Donation History</h5>
+                        <button class="btn btn-sm btn-light rounded-pill px-3 fw-bold text-muted border">Download PDF</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle table-hover-custom">
+                            <thead>
+                                <tr class="text-muted small border-bottom">
+                                    <th class="pb-3 px-3">DATE</th>
+                                    <th class="pb-3">LOCATION</th>
+                                    <th class="pb-3 text-center">UNITS</th>
+                                    <th class="pb-3 text-end px-3">VERIFICATION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in history %}
+                                <tr class="bg-white-hover">
+                                    <td class="py-3 px-3 fw-bold small text-dark">{{ row[2] | string | truncate(10, True, '') }}</td>
+                                    <td class="py-3 small text-muted">{{ row[0] }}</td>
+                                    <td class="py-3 text-center">
+                                        <span class="badge rounded-pill px-3 py-2" style="background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.2);">
+                                            {{ row[1] }} Unit
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-end px-3">
+                                        <span class="text-success small fw-bold">
+                                            <i class="fa fa-check-circle me-1"></i>Verified
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-5">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076402.png" style="width: 60px; opacity: 0.3; margin-bottom: 15px;">
+                                        <p class="text-muted small m-0">No records found. Your journey starts with your first donation!</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth - BloodCare AI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --blood-red: #8b0000;
+            --bright-red: #ff4d4d;
+            --glass-white: rgba(255, 255, 255, 0.96);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle, #4a0000 0%, #1a0000 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND ANIMATIONS --- */
+        .ekg-line {
+            position: absolute;
+            width: 100%;
+            height: 200px;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Heart_rate_monitor_trace.svg') repeat-x;
+            background-size: contain;
+            opacity: 0.12;
+            z-index: 1;
+            filter: invert(1);
+            animation: moveEKG 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes moveEKG {
+            from { background-position: 0; }
+            to { background-position: 1000px; }
+        }
+
+        .drop {
+            position: absolute;
+            background-color: var(--bright-red);
+            width: 8px;
+            height: 12px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0.4;
+            z-index: 2;
+            animation: fall linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(110vh); opacity: 0; }
+        }
+
+        /* --- THE PROFESSIONAL WHITE CARD --- */
+        .auth-card {
+            background: var(--glass-white);
+            border-radius: 35px;
+            padding: 45px;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            color: #2d3436;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+            border-top: 6px solid var(--blood-red);
+            position: relative;
+            transition: opacity 0.3s ease;
+        }
+
+        .heart-container {
+            font-size: 3.5rem;
+            color: var(--bright-red);
+            margin-bottom: 15px;
+            display: inline-block;
+            filter: drop-shadow(0 0 8px rgba(255, 77, 77, 0.3));
+            animation: heartBeatEffect 1.3s infinite ease-in-out;
+        }
+
+        @keyframes heartBeatEffect {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.25); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        /* --- FORM STYLING --- */
+        .form-control {
+            background: #f8f9fa !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 12px !important;
+            color: #333 !important;
+            padding: 12px 18px;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--bright-red) !important;
+            box-shadow: 0 0 0 0.25rem rgba(255, 77, 77, 0.1) !important;
+        }
+
+        .btn-blood {
+            background: linear-gradient(135deg, #ff4d4d 0%, #b30000 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: 700;
+            color: white;
+            width: 100%;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-top: 10px;
+        }
+
+        .btn-blood:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(179, 0, 0, 0.3);
+            color: white;
+        }
+
+        .hidden { display: none; }
+        .toggle-link { color: #dc3545; cursor: pointer; text-decoration: none; font-weight: 600; transition: 0.2s; }
+        .toggle-link:hover { text-decoration: underline; color: var(--blood-red); }
+        
+        .footer-note { font-size: 0.85rem; color: #636e72; margin-top: 25px; }
+    </style>
+</head>
+<body>
+
+    <div class="ekg-line"></div>
+    <div id="drops-container"></div>
+
+    <div class="auth-card shadow-lg">
+        <div class="mb-4">
+            <div class="heart-container">
+                <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <h2 class="fw-bold m-0">BloodCare <span style="color: var(--blood-red);">AI</span></h2>
+            <p class="small text-muted">Smart Inventory Management</p>
+        </div>
+
+        <!-- Dynamic Error/Success Messages -->
+        {% if error %}
+        <div class="alert alert-danger py-2 small mb-3 border-0 bg-danger bg-opacity-10 text-danger" style="border-radius: 10px;">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ error }}
+        </div>
+        {% endif %}
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} py-2 small mb-3 border-0 shadow-sm" style="border-radius: 10px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- LOGIN FORM (Hidden if the user just tried to register) -->
+        <form id="loginForm" class="{% if request.endpoint == 'register_user' %}hidden{% endif %}" action="{{ url_for('login') }}" method="POST">
+            <input type="text" name="username" class="form-control" placeholder="Username" required>
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
+            <button type="submit" class="btn btn-blood shadow-sm">Log In</button>
+            <p class="footer-note">New user? <a class="toggle-link" onclick="toggleForm()">Register Account</a></p>
+        </form>
+
+        <!-- REGISTER FORM (Shown if the user just tried to register) -->
+        <form id="registerForm" class="{% if request.endpoint != 'register_user' %}hidden{% endif %}" action="{{ url_for('register_user') }}" method="POST">
+            <input type="text" name="fullname" class="form-control" placeholder="Full Name" required>
+            <input type="text" name="username" class="form-control" placeholder="Choose Username" required>
+            <input type="password" name="password" class="form-control" placeholder="Choose Password" required>
+            
+            <button type="submit" class="btn btn-blood shadow-sm">Create Account</button>
+            <p class="footer-note">Already have an account? <a class="toggle-link" onclick="toggleForm()">Back to Login</a></p>
+        </form>
+    </div>
+
+    <script>
+        // Form Toggle with Fade Effect
+        function toggleForm() {
+            const card = document.querySelector('.auth-card');
+            card.style.opacity = '0';
+            
+            setTimeout(() => {
+                document.getElementById('loginForm').classList.toggle('hidden');
+                document.getElementById('registerForm').classList.toggle('hidden');
+                card.style.opacity = '1';
+            }, 300);
+        }
+
+        // Drop Generator for Background
+        const dropsContainer = document.getElementById('drops-container');
+        function createBloodDrop() {
+            const drop = document.createElement('div');
+            drop.className = 'drop';
+            drop.style.left = Math.random() * 100 + 'vw';
+            drop.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            dropsContainer.appendChild(drop);
+
+            // Remove to prevent memory leaks
+            setTimeout(() => drop.remove(), 5000);
+        }
+        
+        // Spawn drops continuously
+        setInterval(createBloodDrop, 450);
+    </script>
+
+</body>
+</html>

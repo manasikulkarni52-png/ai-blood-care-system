@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <div class="card p-5 border-0 shadow-lg" style="border-radius: 30px; background: rgba(255,255,255,0.95);">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold m-0 text-dark">Donor Registration</h3>
+                <p class="text-muted">Please provide accurate health data for donor validation.</p>
+            </div>
+
+            <!-- ACTION MATCHES YOUR FLASK ROUTE -->
+            <form action="{{ url_for('register_donor_action') }}" method="POST">
+                <div class="row g-4">
+                    <!-- Full Name Field -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Full Name</label>
+                        <input type="text" name="name" class="form-control bg-light border-0 py-2" 
+                               value="{{ session['user'] }}" readonly required>
+                        <div class="form-text text-xs">Registered name from your account.</div>
+                    </div>
+
+                    <!-- Blood Group Field -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small">Blood Group</label>
+                        <select name="blood_group" class="form-select bg-light border-0 py-2" required>
+                            <option value="" disabled selected>Select</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        </select>
+                    </div>
+
+                    <!-- Gender Field -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small">Gender</label>
+                        <select name="gender" class="form-select bg-light border-0 py-2" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Age Field -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">Age</label>
+                        <input type="number" name="age" class="form-control bg-light border-0 py-2" 
+                               min="18" max="65" placeholder="Min 18" required>
+                    </div>
+
+                    <!-- Weight Field -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">Weight (kg)</label>
+                        <input type="number" name="weight" class="form-control bg-light border-0 py-2" 
+                               min="45" placeholder="Min 45kg" required>
+                    </div>
+
+                    <!-- Last Donated Field -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">Last Donated</label>
+                        <input type="date" name="last_donated" class="form-control bg-light border-0 py-2">
+                        <div class="form-text text-xs">Leave blank if first time.</div>
+                    </div>
+
+                    <!-- Contact Number Field -->
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold small">Contact Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0"><i class="fa fa-phone text-muted"></i></span>
+                            <input type="tel" name="phone" class="form-control bg-light border-0 py-2" 
+                                   placeholder="10 Digit Mobile Number" required
+                                   pattern="[6-9][0-9]{9}" maxlength="10"
+                                   title="Enter a valid 10-digit mobile number">
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-danger w-100 py-3 rounded-pill shadow-lg fw-bold">
+                            <i class="fa fa-heartbeat me-2"></i>Validate & Register Donor
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

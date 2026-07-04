@@ -1,0 +1,237 @@
+{% extends "admin_layout.html" %}
+
+{% block content %}
+<style>
+    /* Enterprise Healthcare Theme Variables */
+    :root {
+        --surface-bg: #ffffff;
+        --page-bg: #f4f6f9;
+        --border-light: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+        --accent-danger: #dc2626;
+        --accent-warning: #d97706;
+        --accent-success: #059669;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    /* Override any weird centering from previous layouts */
+    .admin-inventory-container {
+        max-width: 100%;
+        text-align: left;
+    }
+
+    .header-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .header-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .header-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    /* Sleek Metric Cards */
+    .metric-card {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-light);
+        border-radius: 8px; /* Sharper, professional corners */
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease;
+    }
+
+    .metric-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: #cbd5e1;
+    }
+
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .blood-type {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+    }
+
+    /* Minimalist Badges */
+    .status-badge {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    .badge-stable { background: #ecfdf5; color: var(--accent-success); border: 1px solid #d1fae5; }
+    .badge-low { background: #fffbeb; color: var(--accent-warning); border: 1px solid #fef3c7; }
+    .badge-critical { background: #fef2f2; color: var(--accent-danger); border: 1px solid #fee2e2; }
+
+    .unit-count {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        line-height: 1;
+    }
+
+    .unit-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-left: 4px;
+    }
+
+    /* Precision Progress Bar */
+    .progress-track {
+        height: 4px;
+        background: #f1f5f9;
+        border-radius: 2px;
+        margin-top: 1.25rem;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 1s ease-in-out;
+    }
+
+    .fill-stable { background-color: var(--accent-success); }
+    .fill-low { background-color: var(--accent-warning); }
+    .fill-critical { background-color: var(--accent-danger); }
+
+    /* Professional Alert Box */
+    .system-alert {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-light);
+        border-left: 4px solid var(--accent-danger);
+        border-radius: 6px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        margin-top: 2rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .system-alert.stable {
+        border-left-color: var(--accent-success);
+    }
+
+    .alert-icon {
+        font-size: 1.25rem;
+        margin-right: 1rem;
+        margin-top: 0.1rem;
+    }
+
+    .alert-danger { color: var(--accent-danger); }
+    .alert-success { color: var(--accent-success); }
+
+    .alert-heading {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+    }
+
+    .alert-body {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+</style>
+
+<div class="admin-inventory-container">
+    <div class="header-section">
+        <h2 class="header-title">Live Inventory Dashboard</h2>
+        <p class="header-subtitle">Real-time monitoring and predictive analytics for all blood groups.</p>
+    </div>
+
+    <div class="row g-4">
+        {% for item in stock %}
+        <!-- Assuming 1000 is max capacity for the progress bar calculation -->
+        {% set fill_percentage = (item.units / 1000) * 100 %}
+        {% if fill_percentage > 100 %}{% set fill_percentage = 100 %}{% endif %}
+        
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="metric-card">
+                <div class="card-top">
+                    <span class="blood-type">{{ item.group }}</span>
+                    {% if item.status == 'Critical' %}
+                        <span class="status-badge badge-critical">Critical</span>
+                    {% elif item.status == 'Low' %}
+                        <span class="status-badge badge-low">Low</span>
+                    {% else %}
+                        <span class="status-badge badge-stable">Stable</span>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <span class="unit-count">{{ item.units }}</span><span class="unit-label">Units</span>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill 
+                        {% if item.status == 'Critical' %}fill-critical
+                        {% elif item.status == 'Low' %}fill-low
+                        {% else %}fill-stable{% endif %}" 
+                        style="width: 0%;" 
+                        data-target-width="{{ fill_percentage }}%">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- System Alert Panel -->
+<div class="system-alert {% if not low_groups %}stable{% endif %}">
+        <div class="alert-icon {% if low_groups %}alert-danger{% else %}alert-success{% endif %}">
+            <i class="fa-solid {% if low_groups %}fa-triangle-exclamation{% else %}fa-check-circle{% endif %}"></i>
+        </div>
+        <div>
+            <h6 class="alert-heading">Automated System Intelligence</h6>
+            <p class="alert-body">
+                {% if low_groups %}
+                    <strong>Action Required:</strong> Predictive models indicate impending shortages for 
+                    <span class="text-dark fw-bold">
+                        {% for item in low_groups %}
+                            {{ item.group }} ({{ item.risk }}){% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>. Recommend initiating targeted donor outreach immediately.
+                {% else %}
+                    <strong>System Nominal:</strong> All inventory levels are currently operating within optimal parameters. No immediate intervention required.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Smooth width animation on load
+    document.addEventListener("DOMContentLoaded", function() {
+        const bars = document.querySelectorAll('.progress-fill');
+        setTimeout(() => {
+            bars.forEach(bar => {
+                bar.style.width = bar.getAttribute('data-target-width');
+            });
+        }, 150);
+    });
+</script>
+{% endblock %}

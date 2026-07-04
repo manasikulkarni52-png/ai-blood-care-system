@@ -1,0 +1,11 @@
+hb,rbc,wbc,plt,label
+14.5,4.8,7000,250,Normal Health
+10.2,3.2,6000,200,Anemia
+13.0,4.5,15000,180,Infection
+8.5,2.8,11000,140,Dengue
+11.0,3.9,3500,160,Leukopenia
+15.0,5.0,8000,550,Thrombocytosis
+14.0,4.7,7500,240,Normal Health
+9.5,3.0,5500,190,Anemia
+13.5,4.6,16000,185,Infection
+7.5,2.5,12000,120,Dengue

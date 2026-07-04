@@ -1,0 +1,20 @@
+{% extends "admin_layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>🚨 System Alerts</h3>
+
+    {% if alerts %}
+        {% for alert in alerts %}
+            <div class="alert alert-{{ alert.type }} mt-3">
+                <strong>{{ alert.msg }}</strong><br>
+                <small class="text-muted">{{ alert.time }}</small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-success mt-3">
+            No alerts. System is stable ✅
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

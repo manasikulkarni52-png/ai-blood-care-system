@@ -1,0 +1,311 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    /* Page Entrance Animation */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    /* Premium Glass Profile Card */
+    .glass-profile-card {
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Top Color Banner */
+    .profile-banner {
+        height: 140px;
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.02) 100%);
+        border-bottom: 1px solid rgba(220, 53, 69, 0.1);
+        position: relative;
+    }
+
+    /* Animated Avatar Wrapper */
+    .avatar-wrapper {
+        width: 130px;
+        height: 130px;
+        margin: -65px auto 20px auto;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .profile-avatar {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #ff4d4d 0%, #b30000 100%);
+        border: 5px solid #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 25px rgba(220, 53, 69, 0.3);
+        color: white;
+        font-size: 3rem;
+        transition: transform 0.3s ease;
+    }
+    .profile-avatar:hover {
+        transform: scale(1.05);
+    }
+
+    /* 🌟 THE SMILING HEART ANIMATION 🌟 */
+    .smiling-heart-badge {
+        position: absolute;
+        bottom: 5px;
+        right: 0px;
+        background: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border: 2px solid #ffeaeb;
+        /* The bounce animation */
+        animation: float-heart 3s ease-in-out infinite;
+    }
+
+    @keyframes float-heart {
+        0% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-6px) rotate(8deg); }
+        100% { transform: translateY(0px) rotate(0deg); }
+    }
+
+    /* Profile Data Rows */
+    .data-row {
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        border-radius: 16px;
+        padding: 15px 25px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+    .data-row:hover {
+        background: #ffffff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        transform: translateX(5px);
+    }
+    .data-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        font-size: 1.1rem;
+    }
+
+    /* Buttons */
+    .btn-custom-outline {
+        background: transparent;
+        border: 2px solid rgba(220, 53, 69, 0.2);
+        color: #dc3545;
+        border-radius: 14px;
+        transition: 0.3s;
+    }
+    .btn-custom-outline:hover {
+        background: rgba(220, 53, 69, 0.05);
+        border-color: #dc3545;
+    }
+    
+    .btn-custom-solid {
+        background: linear-gradient(135deg, #dc3545 0%, #8b0000 100%);
+        border: none;
+        color: white;
+        border-radius: 14px;
+        transition: 0.3s;
+    }
+    .btn-custom-solid:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+        color: white;
+    }
+
+    /* 🌟 SETTINGS BUTTON & MODAL UI 🌟 */
+    .btn-settings {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        z-index: 20;
+    }
+    .btn-settings:hover {
+        background: white;
+        color: #dc3545;
+        transform: rotate(90deg);
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.15);
+    }
+
+    /* Premium Glass Modal */
+    .glass-modal {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+    }
+    
+    /* Input Styling for Modal */
+    .modal-input-wrapper { position: relative; margin-bottom: 20px; }
+    .modal-input-wrapper i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #adb5bd; transition: 0.3s; }
+    .modal-input { padding: 14px 16px 14px 50px !important; border-radius: 14px !important; border: 1px solid rgba(0,0,0,0.08) !important; background: rgba(255,255,255,0.9) !important; font-weight: 500; transition: all 0.3s ease; }
+    .modal-input:focus { box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.15) !important; border-color: #dc3545 !important; }
+    .modal-input:focus + i { color: #dc3545; }
+</style>
+
+<div class="container-fluid py-5 px-3">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 col-xl-5 fade-in-up">
+            
+            <div class="glass-profile-card text-center mb-4">
+                <button type="button" class="btn-settings" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    <i class="fa fa-gear"></i>
+                </button>
+
+                <div class="profile-banner"></div>
+                
+                <div class="avatar-wrapper">
+                    <div class="profile-avatar fw-bolder">
+                        {{ session['user'][0]|upper if session.get('user') else 'U' }}
+                    </div>
+                    
+                    <div class="smiling-heart-badge">
+                        <i class="fa-solid fa-face-smile-hearts text-danger fs-4 fa-beat" style="--fa-animation-duration: 2s;"></i>
+                    </div>
+                </div>
+
+                <div class="px-4 pb-5">
+                    <h3 class="fw-bolder text-dark mb-1">{{ session.get('user') | title if session.get('user') else 'Guest' }}</h3>
+                    
+                    <div class="mb-4">
+                        {% if session.get('user') == 'admin' %}
+                            <span class="badge bg-dark bg-opacity-10 text-dark px-3 py-2 rounded-pill fw-bold border border-dark border-opacity-25">
+                                <i class="fa fa-user-shield text-primary me-1"></i> System Administrator
+                            </span>
+                        {% else %}
+                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-bold border border-success border-opacity-25">
+                                <i class="fa fa-hand-holding-heart me-1"></i> Registered Donor
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="text-start mt-5">
+                        
+                        <div class="data-row">
+                            <div class="data-icon bg-danger bg-opacity-10 text-danger"><i class="fa fa-envelope"></i></div>
+                            <div class="flex-grow-1">
+                                <span class="d-block small text-muted fw-bold text-uppercase" style="letter-spacing: 0.5px;">Account Email</span>
+                                <span class="fw-semibold text-dark">{{ session.get('user') | lower }}@bloodcare.com</span>
+                            </div>
+                        </div>
+
+                        <div class="data-row">
+                            <div class="data-icon bg-primary bg-opacity-10 text-primary"><i class="fa fa-key"></i></div>
+                            <div class="flex-grow-1">
+                                <span class="d-block small text-muted fw-bold text-uppercase" style="letter-spacing: 0.5px;">System Access</span>
+                                <span class="fw-semibold text-dark">
+                                    {% if session.get('user') == 'admin' %}
+                                        Full Global Permissions
+                                    {% else %}
+                                        Standard User Access
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="data-row">
+                            <div class="data-icon bg-success bg-opacity-10 text-success"><i class="fa fa-check-circle"></i></div>
+                            <div class="flex-grow-1">
+                                <span class="d-block small text-muted fw-bold text-uppercase" style="letter-spacing: 0.5px;">Account Status</span>
+                                <span class="fw-semibold text-dark">Active & Verified</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row g-3 mt-4">
+                        <div class="col-6">
+                            {% if session.get('user') == 'admin' %}
+                                <a href="{{ url_for('admin') }}" class="btn btn-custom-outline w-100 py-3 fw-bold">
+                                    <i class="fa fa-house me-1"></i> Admin Home
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('dashboard') }}" class="btn btn-custom-outline w-100 py-3 fw-bold">
+                                    <i class="fa fa-house me-1"></i> Dashboard
+                                </a>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('logout') }}" class="btn btn-custom-solid w-100 py-3 fw-bold shadow-sm">
+                                <i class="fa fa-sign-out-alt me-1"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <p class="text-center text-muted small fw-medium"><i class="fa fa-shield-halved text-success me-1"></i> Your personal profile data is securely encrypted.</p>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal border-0">
+            
+            <div class="modal-header border-0 pb-0 px-4 pt-4">
+                <h5 class="fw-bolder text-dark mb-0"><i class="fa fa-user-pen text-danger me-2"></i> Update Profile Details</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body px-4 py-4">
+                <form action="/update_profile" method="POST">
+                    
+                    <label class="form-label small fw-bold text-secondary ms-1">Full Legal Name</label>
+                    <div class="modal-input-wrapper">
+                        <input type="text" name="full_name" class="form-control modal-input" value="{{ name | title }}" required>
+                        <i class="fa fa-user"></i>
+                    </div>
+
+                    <label class="form-label small fw-bold text-secondary ms-1">Phone Number</label>
+                    <div class="modal-input-wrapper">
+                        <input type="tel" name="phone" class="form-control modal-input" placeholder="Update mobile number" maxlength="10" pattern="[0-9]{10}" required>
+                        <i class="fa fa-phone"></i>
+                    </div>
+
+                    <button type="submit" class="btn btn-custom-solid w-100 py-3 mt-3 fw-bold fs-6">
+                        <i class="fa fa-cloud-arrow-up me-2"></i> Save Changes Securely
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

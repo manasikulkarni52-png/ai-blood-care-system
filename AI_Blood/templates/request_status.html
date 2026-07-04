@@ -1,0 +1,213 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    /* Page Entrance Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    /* Premium Glass Card */
+    .glass-tracking-card {
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    /* Enhanced Table Styling */
+    .premium-table {
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+    .premium-table thead th {
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800;
+        padding-bottom: 15px;
+    }
+    .premium-table tbody tr {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .premium-table tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    .premium-table td {
+        border: none;
+        padding: 16px 20px;
+        vertical-align: middle;
+    }
+    .premium-table td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+    .premium-table td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+    /* Blood Group Badge */
+    .blood-badge-mini {
+        background: linear-gradient(135deg, #ff4d4d 0%, #b30000 100%);
+        color: white;
+        font-weight: 800;
+        padding: 6px 12px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+        display: inline-block;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+    }
+    .status-pending { background: rgba(253, 126, 20, 0.1); color: #fd7e14; border: 1px solid rgba(253, 126, 20, 0.2); }
+    .status-approved { background: rgba(25, 135, 84, 0.1); color: #198754; border: 1px solid rgba(25, 135, 84, 0.2); }
+    .status-rejected { background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.2); }
+
+    /* Emergency Pulse */
+    @keyframes pulse-emergency {
+        0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+        70% { box-shadow: 0 0 0 6px rgba(220, 53, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
+    .badge-emergency {
+        background: #dc3545;
+        color: white;
+        animation: pulse-emergency 1.5s infinite;
+    }
+    
+    .badge-normal {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+    }
+
+    /* Process Info Box */
+    .info-terminal {
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.05) 0%, rgba(13, 110, 253, 0.01) 100%);
+        border: 1px solid rgba(13, 110, 253, 0.1);
+        border-left: 5px solid #0d6efd;
+        border-radius: 16px;
+    }
+</style>
+
+<div class="container-fluid py-4 px-2 px-md-4">
+    
+    <div class="text-center mb-5 fade-in-up">
+        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 65px; height: 65px; border: 1px solid rgba(13, 110, 253, 0.2);">
+            <i class="fa fa-satellite-dish fs-3 fa-fade" style="--fa-animation-duration: 3s;"></i>
+        </div>
+        <h2 class="fw-bolder text-dark tracking-tight">Request Tracking Hub</h2>
+        <p class="text-muted fw-medium">Monitor the live dispatch progress of your blood requisitions.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            
+            <div class="glass-tracking-card p-4 p-md-5 mb-4 fade-in-up" style="animation-delay: 0.1s;">
+                <h5 class="fw-bolder mb-4 text-dark d-flex align-items-center">
+                    <i class="fa fa-bars-progress text-primary me-3"></i> Live Network Status
+                </h5>
+                
+                <div class="table-responsive">
+                    <table class="table premium-table align-middle w-100">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">Target Facility</th>
+                                <th>Group</th>
+                                <th>Volume</th>
+                                <th>Dispatch Priority</th>
+                                <th class="text-end pe-3">System Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in user_history %}
+                            <tr>
+                                <td class="ps-3">
+                                    <div class="fw-bold text-dark" style="font-size: 0.95rem;"><i class="fa fa-hospital text-muted me-2 opacity-50"></i>{{ r.hospital }}</div>
+                                </td>
+                                <td>
+                                    <span class="blood-badge-mini">{{ r.blood_group }}</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bolder text-dark fs-6">{{ r.units }}</span>
+                                    <span class="text-muted small fw-semibold">Units</span>
+                                </td>
+                                <td>
+                                    {% if r.priority == 'Emergency' %}
+                                        <span class="badge badge-emergency rounded-pill px-3 py-2 shadow-sm"><i class="fa fa-triangle-exclamation me-1"></i> Emergency</span>
+                                    {% else %}
+                                        <span class="badge badge-normal rounded-pill px-3 py-2"><i class="fa fa-clock me-1"></i> Standard</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-3">
+                                    {% if r.status == 'Pending' %}
+                                        <div class="status-badge status-pending shadow-sm">
+                                            <i class="fa fa-spinner fa-spin me-2"></i> Awaiting Admin
+                                        </div>
+                                    {% elif r.status == 'Approved' %}
+                                        <div class="status-badge status-approved shadow-sm">
+                                            <i class="fa fa-check-circle me-2"></i> Approved
+                                        </div>
+                                    {% else %}
+                                        <div class="status-badge status-rejected shadow-sm">
+                                            <i class="fa fa-times-circle me-2"></i> Rejected
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr style="background: transparent; box-shadow: none;">
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="mb-3">
+                                        <i class="fa fa-folder-open fa-3x text-muted opacity-25"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-1">No Active Requests</h6>
+                                    <p class="text-muted small mb-0">You have not submitted any blood requisitions to the network yet.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="info-terminal p-4 fade-in-up" style="animation-delay: 0.2s;">
+                <h6 class="fw-bolder text-primary mb-3"><i class="fa fa-circle-info me-2"></i>Standard Operating Procedure</h6>
+                <div class="row g-3 text-secondary small fw-medium">
+                    <div class="col-md-6 d-flex align-items-start">
+                        <i class="fa fa-check text-primary mt-1 me-2 opacity-75"></i>
+                        <span>Standard requests are typically vetted and processed by the admin team within 2-4 hours.</span>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-start">
+                        <i class="fa fa-check text-primary mt-1 me-2 opacity-75"></i>
+                        <span>For <strong>Emergency</strong> demands, the system triggers push notifications to active donors immediately.</span>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-start">
+                        <i class="fa fa-check text-primary mt-1 me-2 opacity-75"></i>
+                        <span>Keep your registered contact phone active. Facility staff may call for secondary verification.</span>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-start">
+                        <i class="fa fa-check text-primary mt-1 me-2 opacity-75"></i>
+                        <span>Once "Approved", your request is live on the global donor dashboard.</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
